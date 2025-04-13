@@ -1,4 +1,4 @@
-module github.com/phathdt/abierr
+module github.com/Phathdt/abierr
 
 go 1.24
 

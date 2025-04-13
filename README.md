@@ -5,7 +5,7 @@ A Go library for decoding Ethereum ABI-encoded error messages.
 ## Installation
 
 ```bash
-go get github.com/phathdt/abierr
+go get github.com/Phathdt/abierr
 ```
 
 ## Usage
@@ -18,7 +18,7 @@ import (
 	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/phathdt/abierr"
+	"github.com/Phathdt/abierr"
 )
 
 func main() {

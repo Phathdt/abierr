@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/phathdt/abierr"
-	"github.com/phathdt/abierr/example/contracts"
+	"github.com/Phathdt/abierr"
+	"github.com/Phathdt/abierr/example/contracts"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
