@@ -3,6 +3,7 @@ package abierr
 import (
 	"encoding/hex"
 	"fmt"
+	"maps"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -13,10 +14,45 @@ type Decoder struct {
 	abi abi.ABI
 }
 
-func NewDecoder(contractABI abi.ABI) *Decoder {
-	return &Decoder{
-		abi: contractABI,
+func NewDecoder(abis ...string) (*Decoder, error) {
+	if len(abis) == 0 {
+		return nil, fmt.Errorf("at least one ABI must be provided")
 	}
+
+	// If only one ABI is provided, parse it directly
+	if len(abis) == 1 {
+		parsedABI, err := abi.JSON(strings.NewReader(abis[0]))
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse ABI: %w", err)
+		}
+		return &Decoder{
+			abi: parsedABI,
+		}, nil
+	}
+
+	// Combine multiple ABIs
+	combinedMethods := make(map[string]abi.Method)
+	combinedEvents := make(map[string]abi.Event)
+	combinedErrors := make(map[string]abi.Error)
+
+	for _, abiStr := range abis {
+		parsedABI, err := abi.JSON(strings.NewReader(abiStr))
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse ABI: %w", err)
+		}
+
+		maps.Copy(combinedMethods, parsedABI.Methods)
+		maps.Copy(combinedEvents, parsedABI.Events)
+		maps.Copy(combinedErrors, parsedABI.Errors)
+	}
+
+	return &Decoder{
+		abi: abi.ABI{
+			Methods: combinedMethods,
+			Events:  combinedEvents,
+			Errors:  combinedErrors,
+		},
+	}, nil
 }
 
 func (d *Decoder) Decode(err error) (string, error) {

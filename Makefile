@@ -24,6 +24,7 @@ clean:
 gen-contract:
 	@echo "Generating smart contract bindings..."
 	abigen --abi example/abi/ERC20Owner.json --pkg contracts --type Erc20Owner --out example/contracts/erc20_owner_contract.go
+	abigen --abi example/abi/ERC20.json --pkg contracts --type Erc20 --out example/contracts/erc20_contract.go
 
 # Linting and formatting
 lint:
