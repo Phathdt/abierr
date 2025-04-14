@@ -72,7 +72,7 @@ func (c *ERC20Client) Mint(toAddress string, amount *big.Int) (common.Hash, erro
 		if decodeErr == nil {
 			return common.Hash{}, fmt.Errorf("contract error: %s", decodedErr)
 		}
-		return common.Hash{}, fmt.Errorf("transaction failed: %w", err)
+		return common.Hash{}, decodeErr
 	}
 
 	return tx.Hash(), nil

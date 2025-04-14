@@ -75,5 +75,5 @@ func (d *Decoder) Decode(err error) (string, error) {
 		return fmt.Sprintf("contract error: %s with params: %v", abiError.Name, unpacked), nil
 	}
 
-	return "", fmt.Errorf("unknown error selector: %s", errorSelector)
+	return "", fmt.Errorf("unknown error: 0x%s", errorSelector)
 }
