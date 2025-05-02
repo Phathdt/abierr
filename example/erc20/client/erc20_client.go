@@ -7,7 +7,7 @@ import (
 	"math/big"
 
 	"github.com/Phathdt/abierr"
-	"github.com/Phathdt/abierr/example/contracts"
+	"github.com/Phathdt/abierr/example/erc20/contracts"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"

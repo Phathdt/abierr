@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/Phathdt/abierr/example/client"
+	"github.com/Phathdt/abierr/example/erc20/client"
 
 	"github.com/joho/godotenv"
 )
