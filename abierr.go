@@ -37,6 +37,35 @@ func NewDecoder(abis ...string) (*Decoder, error) {
 	}, nil
 }
 
+func (d *Decoder) DecodeError(errorCode string) (string, error) {
+	if !strings.HasPrefix(errorCode, "0x") {
+		errorCode = "0x" + errorCode
+	}
+
+	errorBytes, err := hex.DecodeString(strings.TrimPrefix(errorCode, "0x"))
+	if err != nil {
+		return "", fmt.Errorf("failed to decode error code: %w", err)
+	}
+
+	if len(errorBytes) < 4 {
+		return "", fmt.Errorf("invalid error code length")
+	}
+
+	errorSelector := hex.EncodeToString(errorBytes[:4])
+	if abiError, exists := d.errors[errorSelector]; exists {
+		// Try to unpack the error data
+		unpacked, err := abiError.Unpack(errorBytes[4:])
+		if err != nil {
+			return abiError.Name, nil // Return just the error name if we can't unpack params
+		}
+
+		// Format the error with parameters
+		return fmt.Sprintf("contract error: %s with params: %v", abiError.Name, unpacked), nil
+	}
+
+	return "", fmt.Errorf("unknown error: 0x%s", errorSelector)
+}
+
 func (d *Decoder) Decode(err error) (string, error) {
 	dataErr, ok := err.(rpc.DataError)
 	if !ok {
@@ -53,27 +82,5 @@ func (d *Decoder) Decode(err error) (string, error) {
 		return "", fmt.Errorf("error data is not string")
 	}
 
-	hexStr = strings.TrimPrefix(hexStr, "0x")
-	errorBytes, err := hex.DecodeString(hexStr)
-	if err != nil {
-		return "", fmt.Errorf("failed to decode error data: %w", err)
-	}
-
-	if len(errorBytes) < 4 {
-		return "", fmt.Errorf("invalid error data length")
-	}
-
-	errorSelector := hex.EncodeToString(errorBytes[:4])
-	if abiError, exists := d.errors[errorSelector]; exists {
-		// Try to unpack the error data
-		unpacked, err := abiError.Unpack(errorBytes[4:])
-		if err != nil {
-			return abiError.Name, nil // Return just the error name if we can't unpack params
-		}
-
-		// Format the error with parameters
-		return fmt.Sprintf("contract error: %s with params: %v", abiError.Name, unpacked), nil
-	}
-
-	return "", fmt.Errorf("unknown error: 0x%s", errorSelector)
+	return d.DecodeError(hexStr)
 }
